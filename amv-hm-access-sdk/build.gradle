@@ -1,4 +1,7 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven' // needed for jitpack
+
+group = 'org.amv.access'
 
 android {
     compileSdkVersion 26
@@ -26,7 +29,7 @@ android {
 
     repositories {
         maven {
-            url  "https://dl.bintray.com/amvnetworks/amv-access-api-poc"
+            url "https://dl.bintray.com/amvnetworks/amv-access-api-poc"
         }
         flatDir {
             dirs 'libs'
