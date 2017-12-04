@@ -1,0 +1,1 @@
+include ':app', ':amv-access-sdk-spi', ':amv-hm-access-sdk'
