@@ -13,7 +13,8 @@
 
         <activity
             android:name=".CertificatesActivity"
-            android:label="amv Access Demo App">
+            android:label="amv Access Demo App"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -22,6 +23,7 @@
         <activity
             android:name=".BroadcastActivity"
             android:label="Connect to a vehicle via bluetooth"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask" />
     </application>
 
