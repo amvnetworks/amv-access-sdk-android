@@ -1,13 +1,15 @@
+[![Build Status](https://travis-ci.org/amvnetworks/amv-access-sdk-android.svg?branch=master)](https://travis-ci.org/amvnetworks/amv-access-sdk-android)
+
 amv-access-sdk-android
 ======================
 
 # getting started
 ## setup
-### clone
-// TODO
+```bash
+git clone https://github.com/amvnetworks/amv-access-sdk-android.git
+```
 
-## developing
-### build
+## build
 ```bash
 ./gradlew clean build
 ```
