@@ -5,8 +5,9 @@ import android.content.Context;
 
 import org.amv.access.sdk.hm.AccessApiContext;
 import org.amv.access.sdk.hm.AmvAccessSdk;
-import org.amv.access.sdk.spi.AccessSdk;
 import org.amv.access.sdk.sample.util.PropertiesReader;
+import org.amv.access.sdk.spi.AccessSdk;
+import org.amv.access.sdk.spi.error.AccessSdkException;
 
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
@@ -29,14 +30,18 @@ final class AmvSdkInitializer {
             return Observable.just(INSTANCE.get());
         }
 
-        AccessApiContext accessApiContext = createAccessApiContext(context);
-        AccessSdk accessSdk = AmvAccessSdk.create(context, accessApiContext);
+        try {
+            AccessApiContext accessApiContext = createAccessApiContext(context);
+            AccessSdk accessSdk = AmvAccessSdk.create(context, accessApiContext);
 
-        INSTANCE.set(accessSdk);
+            INSTANCE.set(accessSdk);
 
-        return accessSdk
-                .initialize()
-                .map(foo -> accessSdk);
+            return accessSdk
+                    .initialize()
+                    .map(foo -> accessSdk);
+        } catch (Exception e) {
+            return Observable.error(e);
+        }
     }
 
     /**

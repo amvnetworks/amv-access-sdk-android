@@ -3,8 +3,6 @@ package org.amv.access.sdk.sample.util;
 import android.content.Context;
 import android.content.res.AssetManager;
 
-import com.google.common.base.Throwables;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -27,7 +25,7 @@ public class PropertiesReader {
                 properties.load(inputStream);
             }
         } catch (IOException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
 
         return properties;
