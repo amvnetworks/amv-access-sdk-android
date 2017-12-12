@@ -62,19 +62,15 @@ public class InstrumentedTests {
     public void useAppContext() throws Exception {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
-        assertEquals("org.amv.access.sdk.sample.btsampleapp", appContext.getPackageName());
-    }
-
-    @Test
-    public void appLoadRefreshesCertificates() throws Exception {
-        onView(withId(R.id.progress_bar)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        assertEquals("org.amv.access.sdk.sample", appContext.getPackageName());
     }
 
     @Test
     public void titleHasSerialNumber() throws Exception {
         waitForAccessCertificatesDownload();
         DeviceCertificate cert = mainActivityActivityTestRule.getActivity().controller
-                .getDeviceCertificate().blockingFirst();
+                .getDeviceCertificate()
+                .blockingFirst();
 
         String serial = cert.getDeviceSerial();
         onView(withId(R.id.title_button)).check(matches(withText(serial)));
@@ -85,19 +81,21 @@ public class InstrumentedTests {
         // wait for the list to appear
         waitForAccessCertificatesDownload();
         CertificatesActivity.CertificatesAdapter adapter = mainActivityActivityTestRule.getActivity().adapter;
-        if (adapter.getItems().isEmpty() == false) {
-            // check that first cert is in the list view with the same serial as the cert in datasource
-            AccessCertificatePair cert = (AccessCertificatePair) adapter.getItem(0);
-            onData(anything())
-                    .inAdapterView(withId(R.id.certificates_list_view))
-                    .atPosition(0)
-                    .onChildView(withId(R.id.name_text_view))
-                    .check(matches(withText(cert.getDeviceAccessCertificate().getGainerSerial())));
-
-            onView(withId(R.id.certificates_list_view)).check(ViewAssertions.matches(withListSize(adapter.getItems().size())));
-        } else {
+        if (adapter.getItems().isEmpty()) {
             fail("no certificates");
+            return;
         }
+
+        // check that first cert is in the list view with the same serial as the cert in datasource
+        AccessCertificatePair cert = (AccessCertificatePair) adapter.getItem(0);
+        onData(anything())
+                .inAdapterView(withId(R.id.certificates_list_view))
+                .atPosition(0)
+                .onChildView(withId(R.id.name_text_view))
+                .check(matches(withText(cert.getDeviceAccessCertificate().getGainerSerial())));
+
+        onView(withId(R.id.certificates_list_view)).check(ViewAssertions.matches(withListSize(adapter.getItems().size())));
+
     }
 
     @Test
@@ -131,8 +129,6 @@ public class InstrumentedTests {
                 .atPosition(0).onChildView(withId(R.id.revoke_button)).perform(click());
 
         onView(withText(mainActivityActivityTestRule.getActivity().getString(R.string.ok))).check(matches(isDisplayed())).perform(click());
-
-        onView(isRoot()).perform(waitId(R.id.progress_bar, TimeUnit.SECONDS.toMillis(5)));
 
         waitForAccessCertificatesDownload();
         assertTrue(adapter.getCount() == countBeforeDelete - 1);

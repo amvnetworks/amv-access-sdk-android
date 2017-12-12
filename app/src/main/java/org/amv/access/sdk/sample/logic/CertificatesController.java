@@ -83,6 +83,8 @@ public class CertificatesController implements ICertificatesController {
 
         certificateManager.revokeAccessCertificate(accessCertificatePair)
                 .flatMap(foo -> certificateManager.getAccessCertificates())
+                // add a delay to simulate real network
+                .delay(500, TimeUnit.MILLISECONDS)
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(accessCertificates -> {
