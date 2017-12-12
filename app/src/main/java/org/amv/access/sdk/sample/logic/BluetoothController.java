@@ -83,7 +83,9 @@ public class BluetoothController implements IBluetoothController {
                 .getDeviceAccessCertificate()
                 .getGainerSerial());
 
-        this.communicationManager = this.accessSdk.createBluetoothCommunicationManager();
+        this.communicationManager = this.accessSdk
+                .bluetoothCommunicationManagerFactory()
+                .createCommunicationManager();
 
         this.broadcastStateChangesSubscription = this.communicationManager
                 .observeBroadcastState()

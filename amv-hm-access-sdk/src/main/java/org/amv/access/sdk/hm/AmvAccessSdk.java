@@ -15,6 +15,7 @@ import org.amv.access.sdk.spi.AccessSdk;
 import org.amv.access.sdk.spi.bluetooth.BluetoothCommunicationManager;
 import org.amv.access.sdk.spi.certificate.CertificateManager;
 import org.amv.access.sdk.spi.communication.CommandFactory;
+import org.amv.access.sdk.spi.communication.CommunicationManagerFactory;
 
 import io.reactivex.Observable;
 
@@ -60,8 +61,8 @@ public class AmvAccessSdk implements AccessSdk {
     }
 
     @Override
-    public BluetoothCommunicationManager createBluetoothCommunicationManager() {
-        return new HmBluetoothCommunicationManager(createBluetoothBroadcaster());
+    public CommunicationManagerFactory<BluetoothCommunicationManager> bluetoothCommunicationManagerFactory() {
+        return () -> new HmBluetoothCommunicationManager(createBluetoothBroadcaster());
     }
 
     @Override

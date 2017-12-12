@@ -3,6 +3,7 @@ package org.amv.access.sdk.spi;
 import org.amv.access.sdk.spi.bluetooth.BluetoothCommunicationManager;
 import org.amv.access.sdk.spi.certificate.CertificateManager;
 import org.amv.access.sdk.spi.communication.CommandFactory;
+import org.amv.access.sdk.spi.communication.CommunicationManagerFactory;
 
 import io.reactivex.Observable;
 
@@ -24,12 +25,12 @@ public interface AccessSdk {
     CertificateManager certificateManager();
 
     /**
-     * Provides a mechanism to handle the lifecycle of bluetooth communications
-     * with a connected device.
+     * Provides a mechanism to create a manager for handling the lifecycle of bluetooth
+     * communications with a connected device.
      *
-     * @return an instance of BluetoothCommunicationManager
+     * @return a factory creating instances of BluetoothCommunicationManager
      */
-    BluetoothCommunicationManager createBluetoothCommunicationManager();
+    CommunicationManagerFactory<BluetoothCommunicationManager> bluetoothCommunicationManagerFactory();
 
     /**
      * Provides a factory to create commands that can be used in communications
