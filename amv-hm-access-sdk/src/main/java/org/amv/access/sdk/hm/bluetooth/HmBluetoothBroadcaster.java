@@ -88,6 +88,7 @@ public class HmBluetoothBroadcaster implements BluetoothBroadcaster {
     }
 
     private void stopBroadcasting() {
+        Log.d(TAG, "stop broadcasting");
         this.broadcaster.stopBroadcasting();
     }
 
@@ -105,8 +106,7 @@ public class HmBluetoothBroadcaster implements BluetoothBroadcaster {
     public Observable<Boolean> terminate() {
         return Observable.fromCallable(() -> {
             try {
-                Log.d(TAG, "terminate");
-                this.broadcaster.terminate();
+                stopBroadcasting();
             } finally {
                 closeStreamsIfNecessary();
             }

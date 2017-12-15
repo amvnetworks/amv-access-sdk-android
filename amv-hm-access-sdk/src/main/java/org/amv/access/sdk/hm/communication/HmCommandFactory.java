@@ -23,4 +23,9 @@ public class HmCommandFactory implements CommandFactory {
         return new SimpleCommand("SEND_VEHICLE_STATE", VehicleStatus.getVehicleStatus());
     }
 
+    @Override
+    public Command disconnect() {
+        return new SimpleCommand("DISCONNECT", new byte[] {(byte)0xFE});
+    }
+
 }
