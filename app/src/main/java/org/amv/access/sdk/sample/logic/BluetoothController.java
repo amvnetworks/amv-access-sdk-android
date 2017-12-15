@@ -7,6 +7,8 @@ import com.google.common.base.Optional;
 import com.squareup.leakcanary.RefWatcher;
 
 import org.amv.access.sdk.hm.vehicle.HmVehicleState;
+import org.amv.access.sdk.sample.AccessDemoApplication;
+import org.amv.access.sdk.sample.R;
 import org.amv.access.sdk.spi.AccessSdk;
 import org.amv.access.sdk.spi.bluetooth.BluetoothCommunicationManager;
 import org.amv.access.sdk.spi.bluetooth.BroadcastState;
@@ -18,13 +20,12 @@ import org.amv.access.sdk.spi.communication.Command;
 import org.amv.access.sdk.spi.communication.CommandFactory;
 import org.amv.access.sdk.spi.error.AccessSdkException;
 import org.amv.access.sdk.spi.vehicle.VehicleState;
-import org.amv.access.sdk.sample.AccessDemoApplication;
-import org.amv.access.sdk.sample.R;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
@@ -140,24 +141,31 @@ public class BluetoothController implements IBluetoothController {
                 });
     }
 
+    Observable<Boolean> closeConnection() {
+        if (communicationManager == null) {
+            closeStreamsIfNecessary();
+            return Observable.just(true);
+        } else {
+            return communicationManager.terminate()
+
+
+                    .doOnNext(foo -> {
+                        Log.d(TAG, "Disconnect completed.");
+                        closeStreamsIfNecessary();
+                    })
+                    .doOnError(error -> {
+                        Log.w(TAG, "Error while disconnecting", error);
+                        closeStreamsIfNecessary();
+                    })
+                    .doOnComplete(() -> Log.d(TAG, "Disconnect successful"));
+        }
+    }
+
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy: ");
 
-        if (communicationManager == null) {
-            closeStreamsIfNecessary();
-        } else {
-            communicationManager.terminate()
-                    .subscribe(next -> {
-                        Log.d(TAG, "Disconnect successful");
-                    }, error -> {
-                        Log.w(TAG, "Error while disconnecting", error);
-                        closeStreamsIfNecessary();
-                    }, () -> {
-                        Log.d(TAG, "Disconnect completed.");
-                        closeStreamsIfNecessary();
-                    });
-        }
+        sendDisconnectCommand();
 
         RefWatcher refWatcher = AccessDemoApplication.getRefWatcher(context);
         refWatcher.watch(this);
@@ -170,6 +178,22 @@ public class BluetoothController implements IBluetoothController {
             return null;
         }
         return latestVehicleStateRef.get();
+    }
+
+    private void sendDisconnectCommand() {
+        CommandFactory commandFactory = accessSdk.commandFactory();
+        Command disconnectCommand = commandFactory.disconnect();
+
+        this.sentCommand = disconnectCommand.getType();
+
+        this.communicationManager.sendCommand(disconnectCommand)
+                .flatMap(foo -> closeConnection())
+                .doOnError(foo -> closeConnection())
+                .subscribe(next -> {
+                    Log.d(TAG, "Command successfully sent");
+                }, error -> {
+                    Log.e(TAG, error.getMessage());
+                });
     }
 
     private void closeStreamsIfNecessary() {
