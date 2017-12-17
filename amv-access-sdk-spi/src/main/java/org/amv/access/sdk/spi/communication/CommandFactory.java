@@ -25,4 +25,14 @@ public interface CommandFactory {
      * @return a command to which will be responded with the vehicle state
      */
     Command sendVehicleStatus();
+
+    /**
+     * A command for closing the bluetooth connection on the module side.
+     * <p>
+     * This is needed cause e.g. devices with Android version greater or equal to 6 don't close
+     * physical connections reliably.
+     *
+     * @return a command for closing Bluetooth connection.
+     */
+    Command disconnect();
 }
