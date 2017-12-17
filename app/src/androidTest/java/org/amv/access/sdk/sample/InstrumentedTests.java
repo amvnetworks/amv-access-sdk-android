@@ -7,7 +7,6 @@ import android.support.test.espresso.UiController;
 import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.assertion.ViewAssertions;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
-import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.espresso.util.HumanReadables;
 import android.support.test.espresso.util.TreeIterables;
 import android.support.test.runner.AndroidJUnit4;
@@ -31,13 +30,11 @@ import java.util.concurrent.TimeoutException;
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
-import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.anything;
@@ -130,13 +127,18 @@ public class InstrumentedTests {
 
         onView(withText(mainActivityActivityTestRule.getActivity().getString(R.string.ok))).check(matches(isDisplayed())).perform(click());
 
+        // click on error dialog
+        onView(withText(mainActivityActivityTestRule.getActivity().getString(R.string.ok))).check(matches(isDisplayed())).perform(click());
+
         waitForAccessCertificatesDownload();
-        assertTrue(adapter.getCount() == countBeforeDelete - 1);
-        onView(withText(serialToDelete)).check(doesNotExist());
+
+        // as certificate revocation is not supported, the list entry should still be displayed
+        assertTrue(adapter.getCount() == countBeforeDelete);
+        onView(withText(serialToDelete)).check(matches(isDisplayed()));
     }
 
     static void waitForAccessCertificatesDownload() {
-        onView(isRoot()).perform(waitId(R.id.certificates_list_view, TimeUnit.SECONDS.toMillis(5)));
+        onView(isRoot()).perform(waitId(R.id.certificates_list_view, TimeUnit.SECONDS.toMillis(15)));
     }
 
     static Matcher<View> withListSize(final int size) {

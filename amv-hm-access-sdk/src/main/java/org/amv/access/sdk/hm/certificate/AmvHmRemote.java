@@ -6,13 +6,16 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.highmobility.crypto.Crypto;
 import com.highmobility.utils.Base64;
 
-import org.amv.access.client.java6.AccessCertClient;
-import org.amv.access.client.java6.Clients;
-import org.amv.access.client.java6.DeviceCertClient;
-import org.amv.access.client.model.java6.CreateDeviceCertificateRequestDto;
-import org.amv.access.client.model.java6.DeviceCertificateDto;
+import org.amv.access.client.android.AccessApiException;
+import org.amv.access.client.android.AccessCertClient;
+import org.amv.access.client.android.Clients;
+import org.amv.access.client.android.DeviceCertClient;
+import org.amv.access.client.android.model.CreateDeviceCertificateRequestDto;
+import org.amv.access.client.android.model.DeviceCertificateDto;
+import org.amv.access.client.android.model.ErrorResponseDto;
 import org.amv.access.sdk.hm.AccessApiContext;
 import org.amv.access.sdk.hm.crypto.Keys;
+import org.amv.access.sdk.hm.error.CertificateRevokeException;
 import org.amv.access.sdk.spi.certificate.AccessCertificatePair;
 import org.amv.access.sdk.spi.certificate.DeviceCertificate;
 
@@ -52,7 +55,8 @@ public class AmvHmRemote implements Remote {
                     CreateDeviceCertificateRequestDto body = new CreateDeviceCertificateRequestDto();
                     body.device_public_key = Base64.encode(keys.getPublicKey());
 
-                    return deviceCertClient.createDeviceCertificate(accessApiContext.getApiKey(), body);
+                    return deviceCertClient.createDeviceCertificate(
+                            accessApiContext.getAppId(), accessApiContext.getApiKey(), body);
                 })
                 .onErrorResumeNext(e -> {
                     String errorMessage = getErrorMessage(e);
@@ -95,21 +99,9 @@ public class AmvHmRemote implements Remote {
         checkNotNull(deviceCertificate);
         checkNotNull(certificateId);
 
-        return Observable.just(1)
-                .subscribeOn(SCHEDULER)
-                .doOnNext(foo -> Log.d(TAG, "revokeAccessCertificate"))
-                .flatMap(foo -> {
-                    AccessCertClient client = Clients.simpleAccessCertClient(accessApiContext.getBaseUrl());
-
-                    String[] nonce = createNonceAndSignature(keys);
-
-                    return client.revokeAccessCertificate(nonce[0], nonce[1], deviceCertificate.getDeviceSerial(), certificateId);
-                })
-                .onErrorResumeNext(e -> {
-                    String errorMessage = getErrorMessage(e);
-                    return Observable.error(new RuntimeException(errorMessage, e));
-                })
-                .doOnNext(foo -> Log.d(TAG, "revokeAccessCertificate finished"));
+        return Observable.error(new CertificateRevokeException(
+                new UnsupportedOperationException("Revoking certificates is not supported."))
+        );
     }
 
     private String[] createNonceAndSignature(Keys keys) {
@@ -119,30 +111,24 @@ public class AmvHmRemote implements Remote {
     }
 
     private String getErrorMessage(Throwable error) {
-        boolean hasCause = error.getCause() != null;
-        if (!hasCause) {
-            return error.getMessage();
-        }
-        Throwable cause = error.getCause();
-
-        /*
-        TODO: currently errors deserialization is not implemented in java6 based rest client
-        boolean isAccessApiException = AccessSdkException.class.isAssignableFrom(cause.getClass());
+        boolean isAccessApiException = AccessApiException.class.isAssignableFrom(error.getClass());
         if (isAccessApiException) {
-            AccessSdkException accessApiException = (AccessSdkException) error.getCause();
+            AccessApiException accessApiException = (AccessApiException) error;
             ErrorResponseDto errorDto = accessApiException.getError();
-            if (!errorDto.getErrors().isEmpty()) {
-                ErrorResponseDto.ErrorInfoDto errorInfoDto = errorDto.getErrors().get(0);
-                return errorInfoDto.getTitle() + ": " + errorInfoDto.getDetail();
+            if (errorDto.errors != null && !errorDto.errors.isEmpty()) {
+                ErrorResponseDto.ErrorInfoDto errorInfoDto = errorDto.errors.get(0);
+                return errorInfoDto.title + ": " + errorInfoDto.detail;
             }
-        }*/
+        }
+
+        Throwable cause = findCause(error);
 
         boolean isUnknownHostException = UnknownHostException.class.isAssignableFrom(cause.getClass());
         if (isUnknownHostException) {
             return "Cannot startConnecting to server. Please check internet connection.\n" + cause.getMessage();
         }
 
-        return findCause(cause).getMessage();
+        return cause.getMessage();
     }
 
     private Throwable findCause(Throwable throwable) {

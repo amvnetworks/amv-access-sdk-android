@@ -2,7 +2,7 @@ package org.amv.access.sdk.hm.certificate;
 
 import com.highmobility.crypto.AccessCertificate;
 
-import org.amv.access.client.model.java6.AccessCertificateDto;
+import org.amv.access.client.android.model.AccessCertificateDto;
 import org.amv.access.sdk.spi.certificate.AccessCertificatePair;
 import org.amv.access.sdk.spi.certificate.impl.SimpleAccessCertificatePair;
 

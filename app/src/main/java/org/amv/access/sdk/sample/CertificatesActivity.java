@@ -110,6 +110,8 @@ public class CertificatesActivity extends Activity implements ICertificatesView 
     public void onInitializeFailed(AccessSdkException error) {
         setRefreshing(false);
 
+        titleText.setText(getString(R.string.initialization_error));
+
         new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.initialization_error) + ": " + error.getType().getName())
                 .setMessage(error.getMessage())
