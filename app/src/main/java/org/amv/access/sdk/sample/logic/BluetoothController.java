@@ -136,14 +136,37 @@ public class BluetoothController implements IBluetoothController {
 
         this.communicationManager.sendCommand(lockDoorsCommand)
                 .subscribe(next -> {
-                    Log.d(TAG, "Command successfully sent");
+                    Log.d(TAG, "Command successfully sent.");
                 }, error -> {
                     view.showAlert(context.getString(R.string.could_not_send_command), error.getMessage());
                     updateState(VEHICLE_READY);
                 });
     }
 
-    Observable<Boolean> closeConnection() {
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy: ");
+
+        terminateConnectionManager().subscribe(next -> {
+            Log.d(TAG, "ConnectionManager terminated.");
+        }, error -> {
+            Log.e(TAG, error.getMessage());
+        });
+
+        RefWatcher refWatcher = AccessDemoApplication.getRefWatcher(context);
+        refWatcher.watch(this);
+        refWatcher.watch(this.communicationManager);
+    }
+
+    @Override
+    public VehicleState getVehicleState() {
+        if (state != VEHICLE_READY) {
+            return null;
+        }
+        return latestVehicleStateRef.get();
+    }
+
+    private Observable<Boolean> terminateConnectionManager() {
         if (communicationManager == null) {
             closeStreamsIfNecessary();
             return Observable.just(true);
@@ -159,41 +182,6 @@ public class BluetoothController implements IBluetoothController {
                     })
                     .doOnComplete(() -> Log.d(TAG, "Disconnect successful"));
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        Log.d(TAG, "onDestroy: ");
-
-        sendDisconnectCommand();
-
-        RefWatcher refWatcher = AccessDemoApplication.getRefWatcher(context);
-        refWatcher.watch(this);
-        refWatcher.watch(this.communicationManager);
-    }
-
-    @Override
-    public VehicleState getVehicleState() {
-        if (state != VEHICLE_READY) {
-            return null;
-        }
-        return latestVehicleStateRef.get();
-    }
-
-    private void sendDisconnectCommand() {
-        CommandFactory commandFactory = accessSdk.commandFactory();
-        Command disconnectCommand = commandFactory.disconnect();
-
-        this.sentCommand = disconnectCommand.getType();
-
-        this.communicationManager.sendCommand(disconnectCommand)
-                .doOnError(foo -> closeConnection())
-                .flatMap(foo -> closeConnection())
-                .subscribe(next -> {
-                    Log.d(TAG, "Command successfully sent");
-                }, error -> {
-                    Log.e(TAG, error.getMessage());
-                });
     }
 
     private void closeStreamsIfNecessary() {
@@ -268,7 +256,7 @@ public class BluetoothController implements IBluetoothController {
 
         this.communicationManager.sendCommand(command1)
                 .subscribe(next -> {
-                    Log.d(TAG, "Command successfully sent");
+                    Log.d(TAG, "Command successfully sent.");
                 }, error -> {
                     Log.d(TAG, "Error while sending command: " + error.getMessage());
                     if (!initializing.get()) {

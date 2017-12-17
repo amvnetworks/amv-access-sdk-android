@@ -15,6 +15,7 @@ import org.amv.access.sdk.spi.bluetooth.IncomingCommandEvent;
 import org.amv.access.sdk.spi.bluetooth.impl.SimpleConnectionStateChangeEvent;
 import org.amv.access.sdk.spi.certificate.AccessCertificatePair;
 import org.amv.access.sdk.spi.communication.Command;
+import org.amv.access.sdk.spi.communication.CommandFactory;
 import org.amv.access.sdk.spi.error.AccessSdkException;
 import org.amv.access.sdk.spi.vehicle.VehicleState;
 
@@ -30,6 +31,7 @@ public class HmBluetoothCommunicationManager implements BluetoothCommunicationMa
     private static final String TAG = "HmBluetoothCommunicationManager";
 
     private final BluetoothBroadcaster broadcaster;
+    private final CommandFactory commandFactory;
     private final PublishSubject<ConnectionStateChangeEvent> connectionStateSubject;
     private final PublishSubject<IncomingCommandEvent> incomingCommandsSubject;
     private final PublishSubject<VehicleState> vehicleStatusSubject;
@@ -41,8 +43,9 @@ public class HmBluetoothCommunicationManager implements BluetoothCommunicationMa
     private volatile Disposable connectionStateSubscription;
     private volatile Disposable broadcastConnectionSubscription;
 
-    public HmBluetoothCommunicationManager(BluetoothBroadcaster broadcaster) {
+    public HmBluetoothCommunicationManager(BluetoothBroadcaster broadcaster, CommandFactory commandFactory) {
         this.broadcaster = checkNotNull(broadcaster);
+        this.commandFactory = checkNotNull(commandFactory);
 
         this.connectionStateSubject = PublishSubject.create();
         this.incomingCommandsSubject = PublishSubject.create();
@@ -102,10 +105,14 @@ public class HmBluetoothCommunicationManager implements BluetoothCommunicationMa
      */
     @Override
     public Observable<Boolean> terminate() {
-        return Observable.just(1)
-                .flatMap(next -> this.broadcaster.terminate())
-                .doOnNext(next -> terminateInternal())
-                .doOnError(e -> terminateInternal());
+        Observable<Boolean> sendDisconnectCommandAndContinueOnError = this
+                .sendCommand(this.commandFactory.disconnect())
+                .onErrorReturnItem(true);
+
+        return sendDisconnectCommandAndContinueOnError
+                .flatMap(foo -> this.broadcaster.terminate())
+                .doOnError(e -> terminateInternal())
+                .doOnNext(next -> terminateInternal());
     }
 
     private void terminateInternal() {
