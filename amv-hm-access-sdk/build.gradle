@@ -49,7 +49,7 @@ dependencies {
     //implementation('com.highmobility:hmkit-auto-api:1.0.4')
 
     api project(':amv-access-sdk-spi')
-    implementation 'org.amv.access:client-android:0.6.0'
+    implementation 'org.amv.access:client-android:0.7.0'
 
     compileOnly 'org.projectlombok:lombok:1.16.16'
     annotationProcessor 'org.projectlombok:lombok:1.16.16'
