@@ -3,6 +3,12 @@ package org.amv.access.sdk.hm;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.facebook.android.crypto.keychain.AndroidConceal;
+import com.facebook.android.crypto.keychain.SharedPrefsBackedKeyChain;
+import com.facebook.crypto.Crypto;
+import com.facebook.crypto.CryptoConfig;
+import com.facebook.crypto.keychain.KeyChain;
+import com.facebook.soloader.SoLoader;
 import com.highmobility.hmkit.Manager;
 
 import org.amv.access.sdk.hm.certificate.AmvHmRemote;
@@ -11,8 +17,7 @@ import org.amv.access.sdk.hm.certificate.HmLocalStorage;
 import org.amv.access.sdk.hm.certificate.LocalStorage;
 import org.amv.access.sdk.hm.certificate.Remote;
 import org.amv.access.sdk.hm.communication.HmCommandFactory;
-import org.amv.access.sdk.hm.secure.AndroidCodec;
-import org.amv.access.sdk.hm.secure.Codec;
+import org.amv.access.sdk.hm.secure.ConcealCodec;
 import org.amv.access.sdk.hm.secure.PlaintextCodec;
 import org.amv.access.sdk.hm.secure.SecureStorage;
 import org.amv.access.sdk.hm.secure.SharedPreferencesStorage;
@@ -62,7 +67,7 @@ class AmvAccessSdkConfiguration {
 
     private SecureStorage secureStorage() {
         SharedPreferencesStorage sharedPreferencesStorage = sharedPreferencesStorage();
-        return new SingleCodecSecureStorage(sharedPreferencesStorage, androidCodec());
+        return new SingleCodecSecureStorage(sharedPreferencesStorage, concealCodec());
     }
 
     private SharedPreferencesStorage sharedPreferencesStorage() {
@@ -70,13 +75,11 @@ class AmvAccessSdkConfiguration {
         return new SharedPreferencesStorage(sharedPreferences);
     }
 
-    private Codec androidCodec() {
-        return new AndroidCodec(AndroidCodec.Options.builder()
-                .keyAlias("AMV_HM_SECRET_CARRIER_KEY")
-                .encryptedKeyName("AMV_HM_SECRET_CARRIER_ENC_KEY")
-                .initVector(new byte[]{55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44})
-                .aesMode("AES/GCM/NoPadding")
-                .aesKeyLength(128)
-                .build());
+    private ConcealCodec concealCodec() {
+        SoLoader.init(context, false);
+        KeyChain keyChain = new SharedPrefsBackedKeyChain(context, CryptoConfig.KEY_256);
+        Crypto crypto = AndroidConceal.get().createDefaultCrypto(keyChain);
+
+        return new ConcealCodec(crypto);
     }
 }

@@ -20,13 +20,13 @@ public class SingleCodecSecureStorage implements Storage, SecureStorage {
     public Observable<Optional<String>> findString(String key) {
         return Observable.just(1)
                 .flatMap(foo -> storage.findString(key))
-                .map(val -> val.transform(codec::decryptData));
+                .map(val -> val.transform(v -> codec.decryptData(key, v)));
     }
 
     @Override
     public Observable<Boolean> storeString(String key, String value) {
         return Observable.just(1)
-                .map(foo -> codec.encryptData(value))
+                .map(foo -> codec.encryptData(key, value))
                 .flatMap(encryptedValue -> storage.storeString(key, encryptedValue));
     }
 }

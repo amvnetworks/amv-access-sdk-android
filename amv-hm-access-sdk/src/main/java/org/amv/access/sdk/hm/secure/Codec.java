@@ -1,7 +1,7 @@
 package org.amv.access.sdk.hm.secure;
 
 public interface Codec {
-    String encryptData(String unencryptedData);
+    String encryptData(String key, String unencryptedData);
 
-    String decryptData(String encryptedData);
+    String decryptData(String key, String encryptedData);
 }
