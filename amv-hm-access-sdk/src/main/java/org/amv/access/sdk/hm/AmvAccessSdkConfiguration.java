@@ -71,10 +71,12 @@ class AmvAccessSdkConfiguration {
     }
 
     private Codec androidCodec() {
-        SharedPreferences preferences = context.getSharedPreferences("AMV_SECRET_CARRIER_PREFS_ALIAS", MODE_PRIVATE);
-        return new AndroidCodec(context, preferences, AndroidCodec.Options.builder()
+        return new AndroidCodec(AndroidCodec.Options.builder()
                 .keyAlias("AMV_HM_SECRET_CARRIER_KEY")
                 .encryptedKeyName("AMV_HM_SECRET_CARRIER_ENC_KEY")
+                .initVector(new byte[]{55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44})
+                .aesMode("AES/GCM/NoPadding")
+                .aesKeyLength(128)
                 .build());
     }
 }
