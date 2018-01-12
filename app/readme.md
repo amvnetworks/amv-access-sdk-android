@@ -31,6 +31,9 @@ Integration tests currently cover following scenarios:
 * deleting an access certificate
 
 ## how to use the amv Access SDK in your own app
+See [jitpack.io/#amvnetworks/amv-access-sdk-android](https://jitpack.io/#amvnetworks/amv-access-sdk-android)
+for all available versions.
+
 Add the following in your root `build.gradle` at the end of repositories:
 ```groovy
 dependencies {
@@ -43,12 +46,12 @@ dependencies {
 }
 ```
 
-Include an implementation of the `access-api-sdk-spi` in your project e.g. `amv-hm-access-api-sdk`.
+Include an implementation of the `amv-access-sdk-spi` in your project e.g. `amv-hm-access-sdk`.
 Include it in the `dependencies` block of your `build.gradle`:
 ```groovy
 dependencies {
     // ...
-    implementation "org.amv.access:amv-hm-access-api-sdk:${accessSdkImplVersion}"
+    implementation "com.github.amvnetworks.amv-access-sdk-android:amv-hm-access-sdk:${accessSdkImplVersion}"
 }
 ```
 
@@ -100,8 +103,8 @@ To revoke a certificate from the server
 ```java
 void revokeCertificate(AccessCertificate certificate);
 ```
-can be called. If the backend server deletes the certificate successfully the locally stored copy
-will also be removed. Subsequently `onCertificateRevoked();` is called.
+can be called. If the backend server supports revoking certificate and deletes it successfully the
+locally stored copy will also be removed. Subsequently `onCertificateRevoked();` is called.
 
 Once access certificates are present, they can be displayed to the user. When the user selects a
 certificate, bluetooth broadcasting will be started and the app tries to connect to the vehicle.
