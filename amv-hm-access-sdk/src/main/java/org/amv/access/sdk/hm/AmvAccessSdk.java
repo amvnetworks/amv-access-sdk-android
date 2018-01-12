@@ -33,15 +33,15 @@ public class AmvAccessSdk implements AccessSdk {
 
     private final Context context;
     private final Manager manager;
-    private final HmCertificateManager certificateHandler;
+    private final HmCertificateManager certificateManager;
     private final HmCommandFactory commandFactory;
 
     AmvAccessSdk(Context context, Manager manager,
-                 HmCertificateManager certificateHandler,
+                 HmCertificateManager certificateManager,
                  HmCommandFactory commandFactory) {
         this.context = checkNotNull(context);
         this.manager = checkNotNull(manager);
-        this.certificateHandler = checkNotNull(certificateHandler);
+        this.certificateManager = checkNotNull(certificateManager);
         this.commandFactory = checkNotNull(commandFactory);
     }
 
@@ -51,13 +51,13 @@ public class AmvAccessSdk implements AccessSdk {
                 .doOnNext(foo -> {
                     Log.d("", "Initializing...");
                 })
-                .flatMap(foo -> certificateHandler.initialize(context))
+                .flatMap(foo -> certificateManager.initialize(context))
                 .map(foo -> true);
     }
 
     @Override
     public CertificateManager certificateManager() {
-        return certificateHandler;
+        return certificateManager;
     }
 
     @Override
