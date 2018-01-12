@@ -1,7 +1,9 @@
-apply plugin: 'com.android.library'
+
 apply plugin: 'com.github.dcendents.android-maven' // needed for jitpack
 
-group = 'org.amv.access'
+group = 'com.github.amvnetworks.amv-access-sdk-android'
+
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 26

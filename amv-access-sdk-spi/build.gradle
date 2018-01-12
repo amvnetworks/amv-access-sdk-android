@@ -1,3 +1,8 @@
+
+apply plugin: 'com.github.dcendents.android-maven' // needed for jitpack
+
+group = 'com.github.amvnetworks.amv-access-sdk-android'
+
 apply plugin: 'com.android.library'
 
 android {
