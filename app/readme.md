@@ -31,6 +31,18 @@ Integration tests currently cover following scenarios:
 * deleting an access certificate
 
 ## how to use the amv Access SDK in your own app
+Add the following in your root `build.gradle` at the end of repositories:
+```groovy
+dependencies {
+  	allprojects {
+  		repositories {
+  			...
+  			maven { url 'https://jitpack.io' }
+  		}
+  	}
+}
+```
+
 Include an implementation of the `access-api-sdk-spi` in your project e.g. `amv-hm-access-api-sdk`.
 Include it in the `dependencies` block of your `build.gradle`:
 ```groovy
