@@ -16,7 +16,7 @@ git clone https://github.com/amvnetworks/amv-access-sdk-android.git
 
 ### ide
 * Open the project in Android Studio
-* minSdkVersion for android is 21
+* minSdkVersion for android is 23
 * gradle version 4.3
 
 As this project uses [Project Lombok](https://projectlombok.org/) make sure you have the
