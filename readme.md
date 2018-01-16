@@ -5,18 +5,18 @@
 amv-access-sdk-android
 ======================
 
-# getting started
-## setup
+## getting started
+### setup
 ```bash
 git clone https://github.com/amvnetworks/amv-access-sdk-android.git
 ```
 
-## build
+### build
 ```bash
 ./gradlew clean build
 ```
 
-### ide
+#### ide
 * Open the project in Android Studio
 * minSdkVersion for android is 23
 * gradle version 4.3
@@ -26,7 +26,7 @@ As this project uses [Project Lombok](https://projectlombok.org/) make sure you 
 annotation processing enabled.
 
 
-### integration
+## integration
 To start integrating the sdk you must choose an implementation of the `amv-access-sdk-spi` module.
 Currently there is only one such implementation which is `amv-hm-access-sdk`.
 
@@ -50,8 +50,7 @@ allprojects {
     }
 ```
 
-**Step 3.** Copy the `hmkit-android-*.aar` file from `amv-hm-access-sdk/libs` to your own `libs/` directory and
-and the following lines to your repositories:
+**Step 3.** Copy the `hmkit-android-*.aar` file from `amv-hm-access-sdk/libs/` to your own `libs/` directory and the following lines to your repositories:
 ```groovy
     repositories {
         ...
