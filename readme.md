@@ -25,10 +25,29 @@ As this project uses [Project Lombok](https://projectlombok.org/) make sure you 
 [IntelliJ Lombok Plugin](https://github.com/mplushnikov/lombok-intellij-plugin) installed and
 annotation processing enabled.
 
+## modules
+This repository currently consists of three modules.
+
+### amv-access-sdk-spi
+A module consisting of interfaces and simple base classes which represents the basic requirements
+and concepts needed to in concrete implementations.
+
+### amv-hm-access-sdk
+The first and currently only basic implementation of `amv-access-sdk-spi`.
+
+### app
+An working example app and demo implementation which uses `amv-hm-access-sdk` and can be used
+to get started quickly with your own app.
+
 
 ## integration
-To start integrating the sdk you must choose an implementation of the `amv-access-sdk-spi` module.
+In order to integrate the sdk into your own app you need two things:
+- api credentials to successfully register a device with a backend service
+- an implementation of the `amv-access-sdk-spi` module
+
 Currently there is only one such implementation which is `amv-hm-access-sdk`.
+You can always refer to the example application which can be found in the `app/` directory.
+Also, you can always contact a developer if you need further information.
 
 **Step 1.** Add the following lines to your root `build.gradle` at the end of repositories:
 ```groovy
@@ -50,7 +69,7 @@ allprojects {
     }
 ```
 
-**Step 3.** Copy the `hmkit-android-*.aar` file from `amv-hm-access-sdk/libs/` to your own `libs/` directory and the following lines to your repositories:
+**Step 3.** Copy the `hmkit-android-*.aar` file from `amv-hm-access-sdk/libs/` to your own `libs/` directory and add the following lines to your repositories:
 ```groovy
     repositories {
         ...
