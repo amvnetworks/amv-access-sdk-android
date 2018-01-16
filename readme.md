@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/amvnetworks/amv-access-sdk-android.svg?branch=master)](https://travis-ci.org/amvnetworks/amv-access-sdk-android)
+[![Jitpack](https://jitpack.io/v/amvnetworks/amv-access-sdk-android.svg)](https://jitpack.io/#amvnetworks/amv-access-sdk-android)
+
 
 amv-access-sdk-android
 ======================
