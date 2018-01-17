@@ -30,15 +30,18 @@ This repository currently consists of three modules.
 
 ### amv-access-sdk-spi
 A module consisting of interfaces and simple base classes which represents the basic requirements
-and concepts needed to in concrete implementations.
+and concepts needed in concrete implementations.
 
 ### amv-hm-access-sdk
-The first and currently only basic implementation of `amv-access-sdk-spi`.
+The first (and currently only) implementation of `amv-access-sdk-spi`.
 
 ### app
-An working example app and demo implementation which uses `amv-hm-access-sdk` and can be used
+A working example app and demo implementation which uses `amv-hm-access-sdk`. It can be used
 to get started quickly with your own app.
 
+## example app
+To successfully start the example app you have to add a file named `application.properties` in `app/src/main/assets`.
+See the file `application.properties.template` and change the values to your needs.
 
 ## integration
 In order to integrate the sdk into your own app you need two things:
@@ -47,7 +50,7 @@ In order to integrate the sdk into your own app you need two things:
 
 Currently there is only one such implementation which is `amv-hm-access-sdk`.
 You can always refer to the example application which can be found in the `app/` directory.
-Also, you can always contact a developer if you need further information.
+Also, you can contact a developer if you need further information.
 
 **Step 1.** Add the following lines to your root `build.gradle` at the end of repositories:
 ```groovy
