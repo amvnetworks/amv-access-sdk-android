@@ -72,15 +72,7 @@ allprojects {
     }
 ```
 
-**Step 3.** Copy the `hmkit-android-*.aar` file from `amv-hm-access-sdk/libs/` to your own `libs/` directory and add the following lines to your repositories:
-```groovy
-    repositories {
-        ...
-        flatDir {
-            dirs 'libs'
-        }
-    }
-```
+**Step 3.** Copy the `hmkit-android-*.aar` file from `amv-hm-access-sdk/libs/` to your own `libs/` directory.
 
 **Step 4.** Add the dependency:
 
